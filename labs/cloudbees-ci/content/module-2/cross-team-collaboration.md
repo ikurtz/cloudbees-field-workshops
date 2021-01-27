@@ -18,7 +18,7 @@ We will utilize CloudBees CI CasC to enable and configure Notifications for Cros
 
 Now that we have configured CloudBees CI Notifications for our ***managed controllers*** we will add an event trigger to a Pipeline template.
 
-1. In GitHub, navigate to the **Cross Team Collaboration: Add Event Trigger** pull request (#1) in your fork of the **pipeline-template-catalog** repository. ![Event trigger PR](event-trigger-pr.png?width=50pc)
+1. In GitHub, navigate to the **Cross Team Collaboration: Add Event Trigger** pull request in your fork of the **pipeline-template-catalog** repository. ![Event trigger PR](event-trigger-pr.png?width=50pc)
 2. Click on the  **Cross Team Collaboration: Add Event Trigger** pull request link and then click on the **Files changed** tab to see the changes that will be made to the **Maven Pipeline Template**. ![Event trigger changes](event-trigger-changes.png?width=50pc)
 3. We are adding the `eventTrigger` using `jmespathQuery` and adding a new `stage` that will on run when the Pipeline is triggered by an `EventTriggerCause`, and in that `stage` we are using the `getImageBuildEventPayload` Pipeline Shared Library step to extract the event payload.
 ```groovy
