@@ -24,7 +24,8 @@ Verify that `controller-2` is running in developer mode.
 ## Create a New Standalone Pipeline
 Inside the `task-3-folder` create a new Pipeline `data-synced-pipeline` using the following Jenkinsfile:
 
-`pipeline {
+```
+pipeline {
     agent { label 'linux' }
     stages {
         stage('data-sync') {
@@ -34,7 +35,8 @@ Inside the `task-3-folder` create a new Pipeline `data-synced-pipeline` using th
             }
         }
     }
-}`
+}
+```
 
 ## Verify the New Standalone Pipeline Appears on the Other Replica
 - Switch to the other `controller-2` replica and verify that the Pipeline exists and the replicas are synchronized.
