@@ -7,4 +7,7 @@ In this exercise, you will complete the following tasks:
 - Run a sample Maven Pipeline that does take advantage of Workspace Caching and review the build logs in the console output
 - Identify the differences in total build duration between the two aforementioned builds to learn how Workspace Caching can make a significant difference in improving your business
 
+## Introducing Workspace Caching for CloudBees CI
+
+
 
