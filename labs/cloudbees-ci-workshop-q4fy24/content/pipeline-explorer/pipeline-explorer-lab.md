@@ -1,4 +1,4 @@
-# LAB 2: Enhancing Developer Productivity with CloudBees Pipeline Explorer
+# LAB 3: Enhancing Developer Productivity with CloudBees Pipeline Explorer
 
 In this exercise, you will complete the following tasks:
 
