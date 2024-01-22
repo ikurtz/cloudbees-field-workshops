@@ -18,6 +18,15 @@ The [CloudBees S3 Cache Plugin](https://docs.cloudbees.com/plugins/ci/cloudbees-
 ## Verify Configuration of Workspace Caching
 Workspace caching is disabled by default. As an administrator, you can enable this setting on the System configuration page. On `Controller-1`, confirm that workspace caching has been properly configured by first selecting **Manage Jenkins > System**. Navigate to **Workspace Caching** and review the current configuration for the **Cache Implementation**. The **S3 Cache** from the **Cache Manager** list should be selected.
 
+![Selecting the S3 Cache](https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/_images/workspace-cache-screenshots/workspace-caching-global.35d6b6c.png)
+
+The S3 cache uses the configuration of [Artifact Manager on S3 plugin](https://docs.cloudbees.com/plugins/ci/artifact-manager-s3). Refer to [Cloud ready Artifact Manager for AWS](https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-reference-architecture/ra-for-aws/#ams3) for more information.
+
+> [!TIP]
+> Under **Advanced Options** you can also configure which jobs are able to use the cache with the **Job Include Pattern** and **Job Exclude Pattern** fields.
+
+
+
 
 
 
