@@ -38,7 +38,44 @@ This field is empty, which means that all jobs are included by default.
 The **Job Exclude Pattern** allows you to exclude an included job. The syntax is the same as the **Job Include Pattern**. However, an empty value means that nothing is excluded that would otherwise be included (for example, if both fields are empty, the workspace caching feature is enabled for all jobs in the CloudBees CI instance).
 
 ## Configuring the Artifact Manager for S3
-For the CloudBees S3 Cache plugin specifically, the permissions `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject`, and `s3:ListBucket` are needed. For more information on configuring S3, refer to the [Artifact Manager on S3 plugin](https://docs.cloudbees.com/plugins/ci/artifact-manager-s3) documentation.
+For the CloudBees S3 Cache plugin specifically, the permissions `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject`, and `s3:ListBucket` are needed. For more information on configuring S3, refer to the [Artifact Manager on S3 plugin](https://docs.cloudbees.com/plugins/ci/artifact-manager-s3) documentation. Here is the IAM policy attached to the IAM user we'll be using to connect to Amazon S3:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::cb-se-workspace-caching-demo"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::cb-se-workspace-caching-demo/",
+                "arn:aws:kms:us-east-1:268150017804:key/73fe2ba6-4124-428d-aaa4-b8e41bd686ff"
+            ]
+        }
+    ]
+}
+```
 
 Let's take a look at what we need to configure in CloudBees CI to connect to our target AWS S3 bucket for use in workspace caching:
 
@@ -60,6 +97,76 @@ Let's take a look at what we need to configure in CloudBees CI to connect to our
 
 
 6. Upon successful validation, we've completed the configuration for our Artifact Manager on S3.
+
+## Running a Maven CI Pipeline
+
+Before we add the pipeline steps needed to use the S3 cache that we just configured, let's first review the `Jenkinsfile` for the Maven pipeline we'll be using for this lab:
+
+```
+pipeline {
+    agent none
+    options {
+        timeout(time: 10, unit: 'MINUTES') 
+    }
+    stages {
+        stage('Build') {
+            agent { label 'maven' }
+            steps {
+                container ('maven') {
+                    checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/jenkinsci/kubernetes-plugin.git']])
+                    sh """
+                    mvn -Dmaven.repo.local=.m2 -DskipTests=true package
+                    """
+                }
+            }
+        }
+    }
+}
+```
+In summary, this pipeline will:
+1. Check out source code from the `kubernetes-plugin` GitHub repository
+2. Build the Maven project within an ephemeral kubernetes agent labeled `maven`
+3. Runs the Maven package, skipping certain Tests in the process
+
+We're specifically focused on the `Build` stage of a continuous integration process for a Maven project related to the popular [Kubernetes Plugin](https://docs.cloudbees.com/plugins/ci/kubernetes).
+
+As a developer, each and every time you trigger this pipeline you know it will have to fetch and download alll of the maven dependencies required for the build. This can significantly delay build times, impacting throughput, which will invevitably lead to slower velocity in delivering new and important features or bug fixes to your customer base. With Workspace Caching for CloudBees CI, you're going to take control of your build health and keep velocity high in the sky where it should be.
+
+Before running this Maven pipeline let's add the `writeCache` and `readCache` steps to the `Jenkinsfile` we explored earlier in the lab so we can begin to use the S3 bucket as a cache for our Maven dependencies.
+
+```
+pipeline {
+    agent none
+    options {
+        timeout(time: 10, unit: 'MINUTES') 
+    }
+    stages {
+        stage('Build') {
+            agent { label 'maven' }
+            steps {
+                container ('maven') {
+                    checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/jenkinsci/kubernetes-plugin.git']])
+                    readCache name: 'mvn-cache'
+                    sh """
+                    mvn -Dmaven.repo.local=.m2 -DskipTests=true package
+                    """
+                    writeCache includes: '.m2/**', name: 'mvn-cache'
+                }
+            }
+        }
+    }
+}
+```
+In the Maven pipeline shown above, we'll note two operations related to Workspace Caching:
+1. `readCache`: This step retrieves the specified cache from storage and restores all files it contains into the current working directory. Files that exist are overwritten. Files that exist but are not part of the cache are left unmodified.
+    1. `name`: A mandatory parameter describing the cache. In the provided code snippet, `readCache 'mvn-cache'` has been defined as the name. This is used to identify the cache in builds of the same job
+  
+2. `writeCache`: This step takes the following parameters to accomplish its tasks:
+    1. `name`: Identical to the parameter used for the `readCache` step, we'll use the same `mvn-cache` to write the files to.
+    2. `includes`: A **mandatory**, comma-separated list of Ant-style expressions that defines the set of files to include in the cache. This works like the artifacts parameter to the `archiveArtifacts` Pipeline step.
+    3. `excludes`: An **optional**, comma-separated list of Ant-style expressions that defines the set of files to exclude from the cache, if they would otherwise be included.
+  
+In summary, after we checkout the source code from the `kubernetes-plugin` repository the `readCache` step will not take you by surprise since we haven't written anything to `mvn-cache` yet. We will circle back to that. After Maven is done packaging we will then use the `writeCache` step in our pipeline to include all files under the `.m2/` directory when uploading them to `mvn-cache`.
 
 
 
