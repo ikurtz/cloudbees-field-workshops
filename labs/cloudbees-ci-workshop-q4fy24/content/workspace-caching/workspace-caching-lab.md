@@ -168,7 +168,7 @@ In the Maven pipeline shown above, we'll note two operations related to Workspac
   
 In summary, after we checkout the source code from the `kubernetes-plugin` repository the `readCache` step will not take you by surprise since we haven't written anything to `mvn-cache` yet. We will circle back to that. After Maven is done packaging we will then use the `writeCache` step in our pipeline to include all files under the `.m2/` directory when uploading them to `mvn-cache`.
 
-
+Navigate to the **workspace-caching-jobs** folder on `Controller-1`. 
 
 
 
