@@ -174,7 +174,29 @@ Navigate to the **workspace-caching-jobs** folder on `Controller-1` and then sel
 
 ![Cache Does Not Exist!](images/cache-does-not-exist.png)
 
- 
+3. As mentioned before, since we haven't written any files to the `mvn-cach` in the S3 bucket yet ... it will be empty and this build run will download dependencies from the internet.
+4. When the Pipeline finishes, be sure to take note of the Total Build Time:
+
+![Build Time without S3 Cache!](images/build-time-without-s3-cache.png)
+
+It's just as important to note the `writeCache` step that's executed to upload the compressed archive to the `mvn-cache` we defined in the Pipeline. You'll see that CloudBees CI successfully uploaded the cache, which we can confirm in the AWS console.
+
+## Running a Maven CI Pipeline Using Workspace Caching
+Now that we've successfully written files to the dedicated cache for this Pipeline, let's see just how much we can reduce the Total Build Time on the next run.
+
+1. Navigate back to the **ikurtz-workspace-caching** job from the Console Output.
+2. Click **Build Now** again and then navigate to the **Console Output** to follow along with the Build.
+3. As expected, when the `readCache` step is executed on this latest Build we can confirm that the `mvn-cache` we just wrote to is found:
+
+![Cache Exists!](images/s3-cache-found.png)
+
+4. When the Pipeine finishes, take note of the Total Build Time:
+
+![Build Time with S3 Cache!](images/build-time-with-s3-cache.png)
+
+We were able to **significantly** reduce the total time it took for Maven to build the `kubernetes-plugin`, as it's now able to retrieve any dependencies or other artifacts it needs within seconds thanks to Workspace Caching. 
+
+Now what if something went wrong during a specific Pipeline stage? What if I need to easily sift through my build log? In the past, all doors led to the Console Output. In the next lab, we'll showcase CloudBees CI's new troubleshooting experience with Pipeline Explorer. 
 
 
 
