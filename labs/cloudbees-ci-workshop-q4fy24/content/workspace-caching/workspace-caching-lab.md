@@ -170,7 +170,9 @@ In summary, after we checkout the source code from the `kubernetes-plugin` repos
 
 Navigate to the **workspace-caching-jobs** folder on `Controller-1` and then select the **ikurtz-workspace-caching-demo** Pipeline. 
 1. Run the Pipeline by clicking **Build Now** and then nagivate to the **Console Output** to follow along with the Build.
-2. Right after the `git` checkout step, you'll see the following message appear as the `readCache` step is executed:
+2. Right after the `git` checkout step, you'll see the following message appear in the Console Output as the `readCache` step is executed:
+
+![Cache Does Not Exist!](images/cache-does-not-exist.png)
 
  
 
