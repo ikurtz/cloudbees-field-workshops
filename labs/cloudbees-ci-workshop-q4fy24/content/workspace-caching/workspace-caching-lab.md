@@ -5,8 +5,8 @@ In this exercise, you will complete the following tasks:
 - Verify that the Workspace Caching configuration has been successfully setup and validated.
     - Verify Artifact Manager on S3 Plugin has been successfully setup
     - Verify the target S3 bucket and its configuration in both CloudBees CI and AWS
-- Run a sample Maven Pipeline that does not yet take advantage of Workspace Caching and review the build logs in the console output
-- Run a sample Maven Pipeline that does take advantage of Workspace Caching and review the build logs in the console output
+- Run a sample Maven CI Pipeline that does not yet take advantage of Workspace Caching and review the build logs in the console output
+- Run a sample Maven CI Pipeline that does take advantage of Workspace Caching and review the build logs in the console output
 - Identify the differences in total build duration between the two aforementioned builds to learn how Workspace Caching can make a significant difference in improving your business
 
 ## Introducing Workspace Caching for CloudBees CI
@@ -168,7 +168,11 @@ In the Maven pipeline shown above, we'll note two operations related to Workspac
   
 In summary, after we checkout the source code from the `kubernetes-plugin` repository the `readCache` step will not take you by surprise since we haven't written anything to `mvn-cache` yet. We will circle back to that. After Maven is done packaging we will then use the `writeCache` step in our pipeline to include all files under the `.m2/` directory when uploading them to `mvn-cache`.
 
-Navigate to the **workspace-caching-jobs** folder on `Controller-1`. 
+Navigate to the **workspace-caching-jobs** folder on `Controller-1` and then select the **ikurtz-workspace-caching-demo** Pipeline. 
+1. Run the Pipeline by clicking **Build Now** and then nagivate to the **Console Output** to follow along with the Build.
+2. Right after the `git` checkout step, you'll see the following message appear as the `readCache` step is executed:
+
+ 
 
 
 
