@@ -7,4 +7,5 @@ In this exercise, you will complete the following tasks:
 - Task 3: Troubleshoot errors associated with a pipeline on one of your Managed Controllers
 - Task 4: Manage the JUnit test results of a pipeline on one of your Managed Controllers
 
+## Introduction to the CloudBees CI Pipeine Explorer
 
