@@ -20,7 +20,7 @@ The [CloudBees S3 Cache Plugin](https://docs.cloudbees.com/plugins/ci/cloudbees-
 ## Verify Configuration of Workspace Caching
 Workspace caching is disabled by default. As an administrator, you can enable this setting on the System configuration page. On `Controller-1`, confirm that workspace caching has been properly configured by first selecting **Manage Jenkins > System**. Navigate to **Workspace Caching** and review the current configuration for the **Cache Implementation**. The **S3 Cache** from the **Cache Manager** list should be selected, as shown in the illustration below.
 
-![Selecting the S3 Cache](https://docs.cloudbees.com/docs/cloudbees-ci/latest/pipelines/_images/workspace-cache-screenshots/workspace-caching-global.35d6b6c.png)
+![Workspace Caching Configuration](images/workspace-caching-config.png)
 
 The S3 cache uses the configuration of the [Artifact Manager on S3 plugin](https://docs.cloudbees.com/plugins/ci/artifact-manager-s3). This plugin permits you to archive artifacts in an S3 Bucket, where there is less need to be concerned about the disk space used by artifacts. We will review the AWS configuration for the S3 bucket we'll be targeting as the cache just after we validate that workspace caching has been enabled for `Controller-1`.
 
@@ -82,19 +82,22 @@ Let's take a look at what we need to configure in CloudBees CI to connect to our
 1. Go to **Manage Jenkins > Configure System**.
 2. In the **Artifact Management for Builds section**, validate that **Amazon S3** is selected as the Cloud Provider for artifact storage:
 
+![Arfiact Manager for S3 Configuration](images/artifact-manager-s3-config.png)
 
 3. Navigate to **Manage Jenkins > Amazon Web Services (AWS) Configuration** to validate the name of the target S3 bucket, `cb-se-workspace-caching-demo` and the corresponding AWS IAM credentials needed to connect to it. Let's start by reviewing the bucket configuration:
 
+![S3 Bucket Settings](images/aws-ws-caching-s3-settings.png)
 
 4. After reviewing the S3 bucket settings, let's validate that we have configured the proper credentials before testing the connection to the `cb-se-workspace-caching-demo` S3 bucket:
+
+![Validate AWS Credentials](images/aws-iam-credential-ws-caching.png)
 
 >[!NOTE]
 > Your AWS account must have the right IAM permissions to access the S3 Bucket, and must be able to `list`, `get`, `put`, and `delete` objects in the S3 Bucket.
 
-
-
 5. It's time to validate the connection from `Controller-1` in CloudBees CI to the S3 bucket we have configured. Directly under the S3 bucket settings, click the **Validate S3 Bucket configuration**. As a result, the following message should be returned, indicating we're ready to use our new S3 bucket to cache build artifacts:
 
+![Validate Connection to S3 Bucket](images/successful-aws-validation.png)
 
 6. Upon successful validation, we've completed the configuration for our Artifact Manager on S3.
 
@@ -172,12 +175,12 @@ Navigate to the **workspace-caching-jobs** folder on `Controller-1` and then sel
 1. Run the Pipeline by clicking **Build Now** and then nagivate to the **Console Output** to follow along with the Build.
 2. Right after the `git` checkout step, you'll see the following message appear in the Console Output as the `readCache` step is executed:
 
-![Cache Does Not Exist!](images/cache-does-not-exist.png)
+![Cache Does Not Exist](images/cache-does-not-exist.png)
 
 3. As mentioned before, since we haven't written any files to the `mvn-cach` in the S3 bucket yet ... it will be empty and this build run will download dependencies from the internet.
 4. When the Pipeline finishes, be sure to take note of the Total Build Time:
 
-![Build Time without S3 Cache!](images/build-time-without-s3-cache.png)
+![Build Time without S3 Cache](images/build-time-without-s3-cache.png)
 
 It's just as important to note the `writeCache` step that's executed to upload the compressed archive to the `mvn-cache` we defined in the Pipeline. You'll see that CloudBees CI successfully uploaded the cache, which we can confirm in the AWS console.
 
@@ -188,11 +191,11 @@ Now that we've successfully written files to the dedicated cache for this Pipeli
 2. Click **Build Now** again and then navigate to the **Console Output** to follow along with the Build.
 3. As expected, when the `readCache` step is executed on this latest Build we can confirm that the `mvn-cache` we just wrote to is found:
 
-![Cache Exists!](images/s3-cache-found.png)
+![Cache Exists](images/s3-cache-found.png)
 
 4. When the Pipeine finishes, take note of the Total Build Time:
 
-![Build Time with S3 Cache!](images/build-time-with-s3-cache.png)
+![Build Time with S3 Cache](images/build-time-with-s3-cache.png)
 
 We were able to **significantly** reduce the total time it took for Maven to build the `kubernetes-plugin`, as it's now able to retrieve any dependencies or other artifacts it needs within seconds thanks to Workspace Caching. 
 
