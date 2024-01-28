@@ -196,7 +196,7 @@ Now that we've successfully written files to the dedicated cache for this Pipeli
 
 We were able to **significantly** reduce the total time it took for Maven to build the `kubernetes-plugin`, as it's now able to retrieve any dependencies or other artifacts it needs within seconds thanks to Workspace Caching. 
 
-Now what if something went wrong during a specific Pipeline stage? What if I need to easily sift through my build log? In the past, all doors led to the Console Output. In the next lab, we'll showcase CloudBees CI's new troubleshooting experience with Pipeline Explorer. 
+Now what if something went wrong during a specific Pipeline stage? What if you need to easily comb through the build log? In the past, all doors led to the Console Output. In the next lab, we'll showcase CloudBees CI's new troubleshooting experience with **Pipeline Explorer**. 
 
 
 
